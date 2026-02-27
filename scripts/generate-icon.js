@@ -106,17 +106,19 @@ async function generate() {
   fs.writeFileSync(pngPath, pngBuffer);
   console.log('Created build/icon.png (1024x1024)');
 
-  // Generate 256x256 PNG for ICO
-  const png256 = await sharp(Buffer.from(svg))
-    .resize(256, 256)
-    .png()
-    .toBuffer();
+  // Generate multiple sizes for ICO (NSIS requires 256x256 max)
+  const icoSizes = [16, 32, 48, 64, 128, 256];
+  const icoPngs = await Promise.all(
+    icoSizes.map(size =>
+      sharp(Buffer.from(svg)).resize(size, size).png().toBuffer()
+    )
+  );
 
   // Generate ICO (for Windows)
-  const icoBuffer = await pngToIco([pngBuffer]);
+  const icoBuffer = await pngToIco(icoPngs);
   const icoPath = path.join(BUILD_DIR, 'icon.ico');
   fs.writeFileSync(icoPath, icoBuffer);
-  console.log('Created build/icon.ico');
+  console.log(`Created build/icon.ico (${icoSizes.join(', ')}px)`);
 
   // Generate 512x512 for macOS icns (electron-builder will convert)
   const png512 = await sharp(Buffer.from(svg))

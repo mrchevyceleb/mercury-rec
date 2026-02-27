@@ -1,6 +1,6 @@
 {
   "name": "mercury-rec",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Liquid metal system audio recorder. Capture system audio, microphone, or both as MP3 with a frameless glassmorphic UI.",
   "author": "mrchevyceleb",
   "license": "MIT",
