@@ -23,11 +23,13 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 396,
-    height: 576,
+    width: 380,
+    height: 560,
     resizable: false,
     frame: false,
     transparent: true,
+    hasShadow: false,
+    thickFrame: false,
     backgroundColor: '#00000000',
     autoHideMenuBar: true,
     webPreferences: {
