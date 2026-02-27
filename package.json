@@ -1,7 +1,14 @@
 {
-  "name": "system-audio-recorder",
+  "name": "mercury-rec",
   "version": "1.0.0",
-  "description": "Record system audio and save as MP3",
+  "description": "Liquid metal system audio recorder. Capture system audio, microphone, or both as MP3 with a frameless glassmorphic UI.",
+  "author": "mrchevyceleb",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrchevyceleb/mercury-rec.git"
+  },
+  "keywords": ["audio", "recorder", "system-audio", "loopback", "electron", "mp3", "screen-capture"],
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -16,8 +23,8 @@
     "electron-builder": "^26.0.0"
   },
   "build": {
-    "appId": "com.systemrecorder.app",
-    "productName": "System Audio Recorder",
+    "appId": "com.mercuryrec.app",
+    "productName": "Mercury Rec",
     "asar": true,
     "asarUnpack": [
       "node_modules/ffmpeg-static/**"
@@ -39,16 +46,6 @@
     },
     "linux": {
       "target": "AppImage"
-    },
-    "extraResources": [
-      {
-        "from": "node_modules/ffmpeg-static/ffmpeg",
-        "to": "ffmpeg"
-      },
-      {
-        "from": "node_modules/ffmpeg-static/ffmpeg.exe",
-        "to": "ffmpeg.exe"
-      }
-    ]
+    }
   }
 }

@@ -9,7 +9,38 @@
 </head>
 <body>
   <div class="container">
+    <div class="bg-mesh"><div class="bg-orb"></div></div>
+    <div class="window-controls">
+      <button class="win-btn win-minimize" id="minimizeBtn" aria-label="Minimize"></button>
+      <button class="win-btn win-close" id="closeBtn" aria-label="Close"></button>
+    </div>
     <h1 class="title">System Audio Recorder</h1>
+
+    <div class="audio-toggles">
+      <div class="toggle-row">
+        <span class="toggle-label">System Audio</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="systemAudioToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-label">Microphone</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="micToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="mic-preview" id="micPreview">
+        <select id="micSelect" class="mic-select">
+          <option value="">Loading devices...</option>
+        </select>
+        <div class="level-meter">
+          <div class="level-meter-fill" id="levelMeterFill"></div>
+        </div>
+      </div>
+    </div>
 
     <div class="recording-indicator" id="recordingIndicator">
       <span class="pulse-dot"></span>
@@ -23,8 +54,12 @@
       <button class="btn btn-stop" id="stopBtn" disabled>Stop</button>
     </div>
 
-    <div class="status" id="status">Ready to record system audio</div>
+    <div class="status" id="status">Ready to record</div>
   </div>
   <script src="renderer.js"></script>
+  <script>
+    document.getElementById('minimizeBtn').addEventListener('click', () => window.audioRecorder.minimize());
+    document.getElementById('closeBtn').addEventListener('click', () => window.audioRecorder.close());
+  </script>
 </body>
 </html>

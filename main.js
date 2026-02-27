@@ -22,10 +22,12 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 400,
-    height: 500,
+    width: 380,
+    height: 560,
     resizable: false,
-    backgroundColor: '#1a1a2e',
+    frame: false,
+    transparent: true,
+    backgroundColor: '#00000000',
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -49,6 +51,7 @@ ipcMain.handle('convert-to-mp3', async (_event, arrayBuffer) => {
 
   return new Promise((resolve, reject) => {
     const proc = spawn(ffmpegPath, [
+      '-y',
       '-i', inputPath,
       '-vn',
       '-codec:a', 'libmp3lame',
@@ -109,6 +112,9 @@ app.whenReady().then(() => {
       callback({ video: sources[0], audio: 'loopback' });
     });
   });
+
+  ipcMain.on('window-minimize', () => mainWindow.minimize());
+  ipcMain.on('window-close', () => mainWindow.close());
 
   createWindow();
 
