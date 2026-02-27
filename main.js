@@ -19,19 +19,28 @@ function getFfmpegPath() {
   return ffmpegStatic;
 }
 
+// Prevent Chromium's GPU compositor from taking over and breaking window
+// transparency on Windows 11. Without this, DWM re-applies its own frame
+// chrome ~5s after launch when the GPU process finishes initializing.
+app.disableHardwareAcceleration();
+
 let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 380,
     height: 560,
+    show: false,
     resizable: false,
+    maximizable: false,
     frame: false,
     transparent: true,
     hasShadow: false,
     thickFrame: false,
+    backgroundMaterial: 'none',
     backgroundColor: '#00000000',
     autoHideMenuBar: true,
+    icon: path.join(__dirname, 'build', 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -40,6 +49,15 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
+
+  // Force Windows 11 DWM to recompute the window region without OS chrome.
+  // Without this, DWM re-applies its own frame decoration after the initial render.
+  mainWindow.once('ready-to-show', () => {
+    const bounds = mainWindow.getBounds();
+    mainWindow.setBounds({ ...bounds, width: bounds.width + 1 });
+    mainWindow.setBounds(bounds);
+    mainWindow.show();
+  });
 }
 
 ipcMain.handle('convert-to-mp3', async (_event, arrayBuffer) => {

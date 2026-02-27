@@ -1,6 +1,6 @@
 {
   "name": "mercury-rec",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Liquid metal system audio recorder. Capture system audio, microphone, or both as MP3 with a frameless glassmorphic UI.",
   "author": "mrchevyceleb",
   "license": "MIT",
@@ -29,7 +29,9 @@
   },
   "devDependencies": {
     "electron": "^35.0.0",
-    "electron-builder": "^26.0.0"
+    "electron-builder": "^26.0.0",
+    "png-to-ico": "^3.0.1",
+    "sharp": "^0.34.5"
   },
   "build": {
     "appId": "com.mercuryrec.app",
@@ -38,12 +40,14 @@
     "asarUnpack": [
       "node_modules/ffmpeg-static/**"
     ],
+    "icon": "build/icon",
     "files": [
       "main.js",
       "preload.js",
       "renderer.js",
       "index.html",
-      "styles.css"
+      "styles.css",
+      "build/icon.png"
     ],
     "publish": {
       "provider": "github",
@@ -51,7 +55,8 @@
       "repo": "mercury-rec"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": true,
