@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; script-src 'self'">
+  <title>System Audio Recorder</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">System Audio Recorder</h1>
+
+    <div class="recording-indicator" id="recordingIndicator">
+      <span class="pulse-dot"></span>
+      <span>REC</span>
+    </div>
+
+    <div class="timer" id="timer">00:00:00</div>
+
+    <div class="controls">
+      <button class="btn btn-record" id="recordBtn">Record</button>
+      <button class="btn btn-stop" id="stopBtn" disabled>Stop</button>
+    </div>
+
+    <div class="status" id="status">Ready to record system audio</div>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>
