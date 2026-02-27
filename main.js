@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog, desktopCapturer, session } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -22,8 +23,8 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 380,
-    height: 560,
+    width: 396,
+    height: 576,
     resizable: false,
     frame: false,
     transparent: true,
@@ -117,6 +118,8 @@ app.whenReady().then(() => {
   ipcMain.on('window-close', () => mainWindow.close());
 
   createWindow();
+
+  autoUpdater.checkForUpdatesAndNotify();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

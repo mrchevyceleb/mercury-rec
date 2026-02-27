@@ -8,7 +8,15 @@
     "type": "git",
     "url": "https://github.com/mrchevyceleb/mercury-rec.git"
   },
-  "keywords": ["audio", "recorder", "system-audio", "loopback", "electron", "mp3", "screen-capture"],
+  "keywords": [
+    "audio",
+    "recorder",
+    "system-audio",
+    "loopback",
+    "electron",
+    "mp3",
+    "screen-capture"
+  ],
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -16,6 +24,7 @@
     "build:mac": "electron-builder --mac"
   },
   "dependencies": {
+    "electron-updater": "^6.8.3",
     "ffmpeg-static": "^5.3.0"
   },
   "devDependencies": {
@@ -36,8 +45,17 @@
       "index.html",
       "styles.css"
     ],
+    "publish": {
+      "provider": "github",
+      "owner": "mrchevyceleb",
+      "repo": "mercury-rec"
+    },
     "win": {
       "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false
     },
     "mac": {
       "target": "dmg",
