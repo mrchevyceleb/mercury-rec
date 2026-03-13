@@ -9,6 +9,11 @@
   const micPreview = document.getElementById('micPreview');
   const micSelect = document.getElementById('micSelect');
   const levelMeterFill = document.getElementById('levelMeterFill');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsPanel = document.getElementById('settingsPanel');
+  const chooseFolderBtn = document.getElementById('chooseFolderBtn');
+  const clearFolderBtn = document.getElementById('clearFolderBtn');
+  const folderPathDisplay = document.getElementById('folderPathDisplay');
 
   let mediaRecorder = null;
   let recordedChunks = [];
@@ -403,4 +408,55 @@
   // Window controls
   document.getElementById('minimizeBtn').addEventListener('click', () => window.audioRecorder.minimize());
   document.getElementById('closeBtn').addEventListener('click', () => window.audioRecorder.close());
+
+  // --- Settings panel ---
+
+  settingsBtn.addEventListener('click', () => {
+    settingsPanel.classList.toggle('active');
+  });
+
+  function updateFolderDisplay(folderPath) {
+    if (folderPath) {
+      folderPathDisplay.textContent = folderPath;
+      clearFolderBtn.disabled = false;
+    } else {
+      folderPathDisplay.textContent = 'Not set (will prompt each time)';
+      clearFolderBtn.disabled = true;
+    }
+  }
+
+  // Load settings on startup
+  window.audioRecorder.getSettings().then((settings) => {
+    updateFolderDisplay(settings.defaultSaveFolder || null);
+  });
+
+  chooseFolderBtn.addEventListener('click', async () => {
+    const folder = await window.audioRecorder.chooseFolder();
+    if (folder) {
+      const settings = await window.audioRecorder.getSettings();
+      settings.defaultSaveFolder = folder;
+      await window.audioRecorder.saveSettings(settings);
+      updateFolderDisplay(folder);
+    }
+  });
+
+  clearFolderBtn.addEventListener('click', async () => {
+    const settings = await window.audioRecorder.getSettings();
+    delete settings.defaultSaveFolder;
+    await window.audioRecorder.saveSettings(settings);
+    updateFolderDisplay(null);
+  });
+
+  // --- Mac platform detection ---
+
+  window.audioRecorder.getPlatform().then((platform) => {
+    if (platform === 'darwin') {
+      // Add hint below the system audio toggle
+      const systemRow = systemAudioToggle.closest('.toggle-row');
+      const hint = document.createElement('div');
+      hint.className = 'toggle-hint';
+      hint.textContent = 'Requires BlackHole or similar virtual audio driver on Mac';
+      systemRow.insertAdjacentElement('afterend', hint);
+    }
+  });
 })();

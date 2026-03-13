@@ -5,6 +5,23 @@ const fs = require('fs');
 const os = require('os');
 const { spawn } = require('child_process');
 
+// --- Settings persistence ---
+function getSettingsPath() {
+  return path.join(app.getPath('userData'), 'settings.json');
+}
+
+function loadSettings() {
+  try {
+    return JSON.parse(fs.readFileSync(getSettingsPath(), 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+function saveSettings(settings) {
+  fs.writeFileSync(getSettingsPath(), JSON.stringify(settings, null, 2));
+}
+
 function getFfmpegPath() {
   const ffmpegStatic = require('ffmpeg-static');
   if (app.isPackaged) {
@@ -19,15 +36,18 @@ function getFfmpegPath() {
   return ffmpegStatic;
 }
 
-// Prevent Chromium's GPU compositor from taking over and breaking window
-// transparency on Windows 11. Without this, DWM re-applies its own frame
-// chrome ~5s after launch when the GPU process finishes initializing.
-app.disableHardwareAcceleration();
+// Prevent Chromium's GPU compositor from breaking window transparency on
+// Windows 11. Only needed on Windows; on Mac it can cause rendering issues.
+if (process.platform === 'win32') {
+  app.disableHardwareAcceleration();
+}
 
 let mainWindow;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const isWin = process.platform === 'win32';
+
+  const windowOptions = {
     width: 380,
     height: 560,
     show: false,
@@ -36,8 +56,6 @@ function createWindow() {
     frame: false,
     transparent: true,
     hasShadow: false,
-    thickFrame: false,
-    backgroundMaterial: 'none',
     backgroundColor: '#00000000',
     autoHideMenuBar: true,
     icon: path.join(__dirname, 'build', 'icon.png'),
@@ -46,16 +64,25 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
     },
-  });
+  };
+
+  // Windows-only options that can crash on other platforms
+  if (isWin) {
+    windowOptions.thickFrame = false;
+    windowOptions.backgroundMaterial = 'none';
+  }
+
+  mainWindow = new BrowserWindow(windowOptions);
 
   mainWindow.loadFile('index.html');
 
-  // Force Windows 11 DWM to recompute the window region without OS chrome.
-  // Without this, DWM re-applies its own frame decoration after the initial render.
   mainWindow.once('ready-to-show', () => {
-    const bounds = mainWindow.getBounds();
-    mainWindow.setBounds({ ...bounds, width: bounds.width + 1 });
-    mainWindow.setBounds(bounds);
+    // Force Windows 11 DWM to recompute the window region without OS chrome.
+    if (isWin) {
+      const bounds = mainWindow.getBounds();
+      mainWindow.setBounds({ ...bounds, width: bounds.width + 1 });
+      mainWindow.setBounds(bounds);
+    }
     mainWindow.show();
   });
 }
@@ -113,6 +140,18 @@ ipcMain.handle('save-file', async (_event, arrayBuffer) => {
   const buffer = Buffer.from(arrayBuffer);
   const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
   const defaultName = `recording-${timestamp}.mp3`;
+  const settings = loadSettings();
+
+  // Auto-save if a default folder is configured
+  if (settings.defaultSaveFolder) {
+    try {
+      const filePath = path.join(settings.defaultSaveFolder, defaultName);
+      fs.writeFileSync(filePath, buffer);
+      return { success: true, filePath };
+    } catch (err) {
+      // Folder may have been deleted; fall through to dialog
+    }
+  }
 
   const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
     defaultPath: path.join(app.getPath('music'), defaultName),
@@ -127,6 +166,24 @@ ipcMain.handle('save-file', async (_event, arrayBuffer) => {
   return { success: true, filePath };
 });
 
+ipcMain.handle('get-platform', () => process.platform);
+
+ipcMain.handle('get-settings', () => loadSettings());
+
+ipcMain.handle('save-settings', (_event, settings) => {
+  saveSettings(settings);
+  return { success: true };
+});
+
+ipcMain.handle('choose-folder', async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory'],
+    title: 'Choose default save folder',
+  });
+  if (canceled || filePaths.length === 0) return null;
+  return filePaths[0];
+});
+
 app.whenReady().then(() => {
   session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
     desktopCapturer.getSources({ types: ['screen'] }).then((sources) => {
@@ -139,7 +196,9 @@ app.whenReady().then(() => {
 
   createWindow();
 
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdatesAndNotify().catch(() => {
+    // Silently ignore update errors (e.g. unsigned Mac builds)
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

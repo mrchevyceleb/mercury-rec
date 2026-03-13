@@ -147,13 +147,126 @@ body {
   background: linear-gradient(145deg, #ff5544, #cc2211);
 }
 
+/* ── Settings gear button ── */
+.win-settings {
+  background: none;
+  color: rgba(180, 190, 210, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.win-settings:hover {
+  color: rgba(220, 230, 250, 0.9);
+  background: none;
+}
+
+/* ── Settings panel ── */
+.settings-panel {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+  -webkit-app-region: no-drag;
+}
+
+.settings-panel.active {
+  display: flex;
+}
+
+.settings-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(175, 185, 210, 0.6);
+  margin-bottom: 2px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-label {
+  font-size: 13px;
+  color: rgba(175, 185, 210, 0.8);
+  font-weight: 500;
+}
+
+.settings-folder-btn {
+  padding: 5px 12px;
+  background: rgba(74, 158, 255, 0.12);
+  color: rgba(130, 190, 255, 0.9);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-folder-btn:hover {
+  background: rgba(74, 158, 255, 0.2);
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
+.settings-folder-path {
+  font-size: 11px;
+  color: rgba(140, 150, 175, 0.5);
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.settings-clear-btn {
+  padding: 4px 10px;
+  background: rgba(255, 80, 80, 0.08);
+  color: rgba(255, 120, 120, 0.7);
+  border: 1px solid rgba(255, 80, 80, 0.1);
+  border-radius: 8px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-self: flex-start;
+}
+
+.settings-clear-btn:hover {
+  background: rgba(255, 80, 80, 0.15);
+  border-color: rgba(255, 80, 80, 0.2);
+}
+
+.settings-clear-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ── Mac system audio warning ── */
+.toggle-hint {
+  font-size: 10px;
+  color: rgba(255, 180, 80, 0.6);
+  margin-top: -4px;
+  padding-left: 2px;
+  line-height: 1.3;
+}
+
 /* ── All interactive content above bg ── */
 .title,
 .audio-toggles,
 .recording-indicator,
 .timer,
 .controls,
-.status {
+.status,
+.settings-panel {
   position: relative;
   z-index: 1;
 }
